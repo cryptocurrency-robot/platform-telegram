@@ -1,12 +1,13 @@
-package org.freekode.cryptobot.priceservice.domain
+package org.freekode.cryptobot.telegramclient.domain.price
 
 import java.io.Serializable
 import java.math.BigDecimal
 
 
-data class PriceValueEvent(
+data class CurrentPriceEvent(
     val platformName: PlatformName,
     val pair: MarketPair,
     val price: BigDecimal,
     val timestamp: Long
 ) : Serializable
+

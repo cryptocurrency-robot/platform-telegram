@@ -1,4 +1,4 @@
-package org.freekode.cryptobot.priceservice.domain
+package org.freekode.cryptobot.telegramclient.domain.price
 
 
 enum class MarketPair(val title: String) {

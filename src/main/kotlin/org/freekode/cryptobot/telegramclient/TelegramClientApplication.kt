@@ -1,9 +1,10 @@
-package org.freekode.cryptobot.priceservice
+package org.freekode.cryptobot.telegramclient
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.activemq.ActiveMQConnectionFactory
-import org.freekode.cryptobot.priceservice.domain.PriceValueEvent
+import org.freekode.cryptobot.telegramclient.domain.alert.PriceAlertEvent
+import org.freekode.cryptobot.telegramclient.domain.price.CurrentPriceEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
@@ -27,10 +28,10 @@ import javax.jms.ConnectionFactory
 @EnableScheduling
 @PropertySources(
     PropertySource("classpath:application.properties"),
-    PropertySource(value = ["file:\${user.home}/price-service.properties"], ignoreResourceNotFound = true)
+    PropertySource(value = ["file:\${user.home}/telegram-client.properties"], ignoreResourceNotFound = true)
 )
-class PriceServiceApplication(
-    @Value("\${broker-url}") private val brokerUrl: String
+class TelegramClientApplication(
+    @Value("\${event.broker-url}") private val brokerUrl: String
 ) {
 
     @Bean
@@ -40,7 +41,7 @@ class PriceServiceApplication(
     ): JmsTemplate {
         val jmsTemplate = JmsTemplate()
         jmsTemplate.connectionFactory = connectionFactory
-        jmsTemplate.messageConverter = messageConverter()
+        jmsTemplate.messageConverter = messageConverter
         jmsTemplate.isPubSubDomain = true
         return jmsTemplate
     }
@@ -76,11 +77,12 @@ class PriceServiceApplication(
 
     private fun getMessageConverterTypeMappings(): Map<String?, Class<*>> {
         return mapOf(
-            PriceValueEvent::class.simpleName to PriceValueEvent::class.java
+            CurrentPriceEvent::class.simpleName to CurrentPriceEvent::class.java,
+            PriceAlertEvent::class.simpleName to PriceAlertEvent::class.java
         )
     }
 }
 
 fun main(args: Array<String>) {
-    runApplication<PriceServiceApplication>(*args)
+    runApplication<TelegramClientApplication>(*args)
 }

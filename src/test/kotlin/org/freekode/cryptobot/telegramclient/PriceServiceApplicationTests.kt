@@ -1,4 +1,4 @@
-package org.freekode.cryptobot.priceservice
+package org.freekode.cryptobot.telegramclient
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,6 +1,6 @@
-package org.freekode.cryptobot.priceservice.rest
+package org.freekode.cryptobot.telegramclient.rest
 
-import org.freekode.cryptobot.priceservice.domain.MarketPair
+import org.freekode.cryptobot.telegramclient.domain.price.MarketPair
 import org.springframework.web.bind.annotation.*
 
 @RestController
