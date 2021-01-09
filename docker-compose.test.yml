@@ -15,14 +15,15 @@ services:
       - '8081:8080'
     environment:
       - BROKER_URL=tcp://crypto-bot-activemq:61616
-    env_file: platform-binance.env
+      - BINANCE_API_KEY=test-key
+      - BINANCE_API_SECRET=test-secret
   indicator-service:
     container_name: 'indicator-service'
     image: docker.pkg.github.com/cryptocurrency-robot/indicator-service/indicator-service:latest
     depends_on:
       - activemq
     ports:
-      - '8082:8080'
+      - '8081:8080'
     environment:
       - EVENT_BROKER_URL=tcp://activemq:61616
   platform-telegram:

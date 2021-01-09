@@ -3,8 +3,6 @@ package org.freekode.cryptobot.telegramclient
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.activemq.ActiveMQConnectionFactory
-import org.freekode.cryptobot.telegramclient.domain.alert.PriceAlertEvent
-import org.freekode.cryptobot.telegramclient.domain.price.CurrentPriceEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
@@ -30,7 +28,7 @@ import javax.jms.ConnectionFactory
     PropertySource("classpath:application.properties"),
     PropertySource(value = ["file:\${user.home}/telegram-client.properties"], ignoreResourceNotFound = true)
 )
-class TelegramClientApplication(
+class PlatformTelegramApplication(
     @Value("\${event.broker-url}") private val brokerUrl: String
 ) {
 
@@ -77,12 +75,10 @@ class TelegramClientApplication(
 
     private fun getMessageConverterTypeMappings(): Map<String?, Class<*>> {
         return mapOf(
-            CurrentPriceEvent::class.simpleName to CurrentPriceEvent::class.java,
-            PriceAlertEvent::class.simpleName to PriceAlertEvent::class.java
         )
     }
 }
 
 fun main(args: Array<String>) {
-    runApplication<TelegramClientApplication>(*args)
+    runApplication<PlatformTelegramApplication>(*args)
 }
