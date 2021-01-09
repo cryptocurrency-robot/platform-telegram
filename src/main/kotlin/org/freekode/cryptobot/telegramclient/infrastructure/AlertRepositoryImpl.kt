@@ -17,7 +17,7 @@ const val ALERT_PATH = "/alert"
 class AlertRepositoryImpl(
     @Value("\${priceServiceUrl}") private val priceServiceUrl: String
 ) : AlertRepository {
-    private val webClient = WebClient.create(priceServiceUrl);
+    private val webClient = WebClient.create(priceServiceUrl)
 
     override fun addAlert(request: AddAlertRequest): Alert {
         return webClient
@@ -52,7 +52,7 @@ class AlertRepositoryImpl(
 
     private fun buildUri(uriBuilder: UriBuilder, relativePath: String): URI {
         return uriBuilder
-            .path(priceServiceUrl + relativePath)
+            .path(relativePath)
             .build()
     }
 }

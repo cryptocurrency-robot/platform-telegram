@@ -10,7 +10,7 @@ const val CHAT_ID = 273552503
 class TelegramPoolingBot(
     private val botToken: String,
     private val botUsername: String,
-    private val updateCallback: (Update) -> Unit
+    private val updateCallback: (Update) -> String?
 ) : TelegramLongPollingBot() {
     override fun getBotToken(): String = botToken
 
@@ -18,12 +18,12 @@ class TelegramPoolingBot(
 
     override fun onUpdateReceived(update: Update) {
         if (update.hasMessage() && update.message.hasText()) {
-            updateCallback(update)
+            println("message = ${update.message.text}")
+            val result: String = updateCallback(update) ?: return
 
-            val message = SendMessage(update.message.chatId.toString(), update.message.text)
+            val message = SendMessage(update.message.chatId.toString(), result)
             try {
-                println("message = ${update.message.text}")
-//                execute(message)
+                execute(message)
             } catch (e: TelegramApiException) {
                 e.printStackTrace()
             }

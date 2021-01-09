@@ -12,7 +12,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 class TelegramClient(
     @Value("\${telegram-bot.token}") private val botToken: String,
     @Value("\${telegram-bot.name}") private val botName: String,
-    private val commandListeners: List<CommandListener>
+    commandListeners: List<CommandListener>
 ) {
 
     private val commandListenerMap = commandListeners.associateBy { it.getCommand() }
@@ -24,10 +24,10 @@ class TelegramClient(
         telegramBotsApi.registerBot(telegramPoolingBot)
     }
 
-    private fun onUpdate(update: Update): String {
+    private fun onUpdate(update: Update): String? {
         if (update.message.isCommand) {
             val commandEvent = getCommandEvent(update)
-            val commandListener = commandListenerMap[commandEvent.command] ?: return "can't find command listener for command = ${commandEvent.command}"
+            val commandListener = commandListenerMap[commandEvent.command] ?: return null
             return commandListener.execute(commandEvent)
         } else {
             return "only commands"

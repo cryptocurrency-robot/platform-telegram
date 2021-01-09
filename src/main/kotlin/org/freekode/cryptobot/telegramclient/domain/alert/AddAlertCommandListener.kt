@@ -8,7 +8,7 @@ import java.math.BigDecimal
 
 
 @Service
-class AddAlertCommandListener(alertRepository: AlertRepository) : CommandListener {
+class AddAlertCommandListener(private val alertRepository: AlertRepository) : CommandListener {
     override fun getCommand(): String = "addAlert"
 
     override fun execute(event: CommandEvent): String {
@@ -16,9 +16,10 @@ class AddAlertCommandListener(alertRepository: AlertRepository) : CommandListene
         val indicatorName = event.params[0]
         val pair = MarketPair.valueOf(event.params[1])
         val type = AlertType.valueOf(event.params[2])
-        val value = BigDecimal.valueOf(event.params[2].toDouble())
-        AddAlertRequest(indicatorName, pair, type, value)
+        val value = BigDecimal.valueOf(event.params[3].toDouble())
+        val request = AddAlertRequest(indicatorName, pair, type, value)
+        val alert = alertRepository.addAlert(request)
 
-        return "done"
+        return "New alert id ${alert.id}"
     }
 }
