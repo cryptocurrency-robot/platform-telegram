@@ -7,6 +7,6 @@ import java.math.BigDecimal
 data class AddAlertRequest(
     val indicatorName: String,
     val pair: MarketPair,
-    val type: String,
+    val type: AlertType,
     val value: BigDecimal,
 )

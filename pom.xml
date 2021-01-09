@@ -9,10 +9,10 @@
 		<version>2.4.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.freekode.cryptobot</groupId>
-	<artifactId>telegram-client</artifactId>
+	<groupId>org.freekode.cryptocurrency-robot</groupId>
+	<artifactId>platform-telegram</artifactId>
 	<version>0.0.1</version>
-	<name>Telegram - Client</name>
+	<name>Platform - Telegram</name>
 
 	<properties>
 		<java.version>11</java.version>

@@ -11,10 +11,11 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 @Service
 class TelegramClient(
     @Value("\${telegram-bot.token}") private val botToken: String,
-    @Value("\${telegram-bot.name}") private val botName: String
+    @Value("\${telegram-bot.name}") private val botName: String,
+    private val commandListeners: List<CommandListener>
 ) {
 
-    private val commandListeners = mutableListOf<(CommandEvent) -> String>()
+    private val commandListenerMap = commandListeners.associateBy { it.getCommand() }
 
     init {
         val telegramPoolingBot = TelegramPoolingBot(botToken, botName) { onUpdate(it) }
@@ -23,17 +24,19 @@ class TelegramClient(
         telegramBotsApi.registerBot(telegramPoolingBot)
     }
 
-    fun addCommandListener(callback: (CommandEvent) -> String) {
-        commandListeners.add(callback)
+    private fun onUpdate(update: Update): String {
+        if (update.message.isCommand) {
+            val commandEvent = getCommandEvent(update)
+            val commandListener = commandListenerMap[commandEvent.command] ?: return "can't find command listener for command = ${commandEvent.command}"
+            return commandListener.execute(commandEvent)
+        } else {
+            return "only commands"
+        }
     }
 
-    private fun onUpdate(update: Update) {
-        if (update.message.isCommand) {
-            val split = update.message.text.split(" ")
-            val event = CommandEvent(split[0], split.subList(1, split.size))
-            commandListeners.forEach { it(event) }
-        } else {
-            throw IllegalStateException("only commands")
-        }
+    private fun getCommandEvent(update: Update): CommandEvent {
+        val split = update.message.text.split(" ")
+        val command = split[0].replace("/", "")
+        return CommandEvent(command, split.subList(1, split.size))
     }
 }
