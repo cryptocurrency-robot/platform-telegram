@@ -3,6 +3,7 @@ package org.freekode.cryptobot.telegramclient
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.activemq.ActiveMQConnectionFactory
+import org.freekode.cryptobot.telegramclient.domain.alert.AlertTriggeredEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer
@@ -75,6 +76,7 @@ class PlatformTelegramApplication(
 
     private fun getMessageConverterTypeMappings(): Map<String?, Class<*>> {
         return mapOf(
+            AlertTriggeredEvent::class.simpleName to AlertTriggeredEvent::class.java
         )
     }
 }
