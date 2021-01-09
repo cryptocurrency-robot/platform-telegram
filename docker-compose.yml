@@ -18,12 +18,19 @@ services:
     env_file: platform-binance.env
   indicator-service:
     container_name: 'indicator-service'
+    image: docker.pkg.github.com/cryptocurrency-robot/indicator-service/indicator-service:latest
+    depends_on:
+      - activemq
+    ports:
+      - '8082:8080'
+    environment:
+      - EVENT_BROKER_URL=tcp://activemq:61616
+  platform-telegram:
+    container_name: 'platform-telegram'
     build: .
     depends_on:
       - activemq
-      - platform-binance
     ports:
-      - '8081:8080'
+      - '8083:8080'
     environment:
-      - BROKER_URL=tcp://crypto-bot-activemq:61616
-
+      - EVENT_BROKER_URL=tcp://activemq:61616
