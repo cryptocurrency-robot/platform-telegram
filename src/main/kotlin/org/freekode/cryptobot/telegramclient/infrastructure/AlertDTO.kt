@@ -12,7 +12,7 @@ data class AlertDTO(
     val type: String,
     val value: BigDecimal,
 ) {
-    fun toDomain(): Alert {
-        return Alert(id, indicatorName, pair, type, value)
+    fun toDomain(chatId: Long): Alert {
+        return Alert(id, chatId, indicatorName, pair, type, value)
     }
 }

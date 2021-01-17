@@ -3,56 +3,43 @@ package org.freekode.cryptobot.telegramclient.infrastructure
 import org.freekode.cryptobot.telegramclient.domain.alert.AddAlertRequest
 import org.freekode.cryptobot.telegramclient.domain.alert.Alert
 import org.freekode.cryptobot.telegramclient.domain.alert.AlertRepository
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.util.UriBuilder
-import java.net.URI
-
-const val ALERT_PATH = "/alert"
+import java.util.function.BiFunction
 
 @Service
 class AlertRepositoryImpl(
-    @Value("\${priceServiceUrl}") private val priceServiceUrl: String
+    private val alertRepositoryClient: AlertRepositoryClient
 ) : AlertRepository {
-    private val webClient = WebClient.create(priceServiceUrl)
+    private val alerts: MutableMap<Long, MutableSet<Int>> = mutableMapOf()
 
     override fun addAlert(request: AddAlertRequest): Alert {
-        return webClient
-            .post()
-            .uri { uriBuilder -> buildUri(uriBuilder, ALERT_PATH) }
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(AddAlertRequestDTO(request)))
-            .retrieve()
-            .bodyToMono(AlertDTO::class.java)
-            .map { it.toDomain() }
-            .block()!!
+        val newAlert = alertRepositoryClient.addAlert(request)
+        val chatId = newAlert.chatId
+        val alertId = newAlert.id
+
+        alerts.compute(chatId, BiFunction { _, value ->
+            if (value == null) {
+                return@BiFunction mutableSetOf(alertId)
+            } else {
+                value.add(alertId)
+                return@BiFunction value
+            }
+        })
+        return newAlert
     }
 
-    override fun getAlerts(ids: Set<Int>): Set<Alert> {
-        webClient
-            .get()
-            .uri { uriBuilder -> buildUri(uriBuilder, "$ALERT_PATH/$ids") }
-            .retrieve()
-            .toBodilessEntity()
-            .block()
+    override fun getAlerts(chatId: Long): Set<Alert> {
+        return alertRepositoryClient.getAlerts(chatId, alerts.getOrDefault(chatId, setOf()))
+    }
+
+    override fun findChatIdForAlert(id: Int): Long? {
+        return alerts
+            .filter { it.value.contains(id) }
+            .map { it.key }
+            .first()
+    }
+
+    override fun removeAlert(chatId: Long, id: Int) {
         throw UnsupportedOperationException("not ready yet")
-    }
-
-    override fun removeAlert(id: Int) {
-        webClient
-            .delete()
-            .uri { uriBuilder -> buildUri(uriBuilder, "$ALERT_PATH/$id") }
-            .retrieve()
-            .toBodilessEntity()
-            .block()
-    }
-
-    private fun buildUri(uriBuilder: UriBuilder, relativePath: String): URI {
-        return uriBuilder
-            .path(relativePath)
-            .build()
     }
 }

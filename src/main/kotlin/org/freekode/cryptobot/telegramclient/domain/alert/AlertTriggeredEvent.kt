@@ -7,7 +7,7 @@ import java.math.BigDecimal
 
 data class AlertTriggeredEvent(
     val id: Int,
-    val indicatorName: String,
+    val indicatorName: IndicatorName,
     val pair: MarketPair,
     val type: AlertType,
     val value: BigDecimal,

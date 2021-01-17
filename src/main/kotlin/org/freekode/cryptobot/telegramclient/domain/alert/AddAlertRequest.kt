@@ -5,6 +5,7 @@ import java.math.BigDecimal
 
 
 data class AddAlertRequest(
+    val chatId: Long,
     val indicatorName: String,
     val pair: MarketPair,
     val type: AlertType,

@@ -4,6 +4,7 @@ import org.freekode.cryptobot.telegramclient.infrastructure.telegram.TelegramPoo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.TelegramBotsApi
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
@@ -14,14 +15,18 @@ class TelegramClient(
     @Value("\${telegram-bot.name}") private val botName: String,
     commandListeners: List<CommandListener>
 ) {
-
     private val commandListenerMap = commandListeners.associateBy { it.getCommand() }
 
-    init {
-        val telegramPoolingBot = TelegramPoolingBot(botToken, botName) { onUpdate(it) }
+    private val telegramPoolingBot = TelegramPoolingBot(botToken, botName) { onUpdate(it) }
 
+    init {
         val telegramBotsApi = TelegramBotsApi(DefaultBotSession::class.java)
         telegramBotsApi.registerBot(telegramPoolingBot)
+    }
+
+    fun sendMessage(chatId: Long, message: String) {
+        val messageRequest = SendMessage(chatId.toString(), message)
+        telegramPoolingBot.execute(messageRequest)
     }
 
     private fun onUpdate(update: Update): String? {
@@ -37,6 +42,6 @@ class TelegramClient(
     private fun getCommandEvent(update: Update): CommandEvent {
         val split = update.message.text.split(" ")
         val command = split[0].replace("/", "")
-        return CommandEvent(command, split.subList(1, split.size))
+        return CommandEvent(update.message.chatId, command, split.subList(1, split.size))
     }
 }

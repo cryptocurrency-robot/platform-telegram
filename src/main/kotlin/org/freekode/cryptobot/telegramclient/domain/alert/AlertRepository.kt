@@ -4,7 +4,9 @@ package org.freekode.cryptobot.telegramclient.domain.alert
 interface AlertRepository {
     fun addAlert(request: AddAlertRequest): Alert
 
-    fun getAlerts(ids: Set<Int>): Set<Alert>
+    fun getAlerts(chatId: Long): Set<Alert>
 
-    fun removeAlert(id: Int)
+    fun findChatIdForAlert(id: Int): Long?
+
+    fun removeAlert(chatId: Long, id: Int)
 }

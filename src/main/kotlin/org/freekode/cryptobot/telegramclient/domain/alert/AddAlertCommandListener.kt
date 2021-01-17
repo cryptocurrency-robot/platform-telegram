@@ -17,7 +17,7 @@ class AddAlertCommandListener(private val alertRepository: AlertRepository) : Co
         val pair = MarketPair.valueOf(event.params[1])
         val type = AlertType.valueOf(event.params[2])
         val value = BigDecimal.valueOf(event.params[3].toDouble())
-        val request = AddAlertRequest(indicatorName, pair, type, value)
+        val request = AddAlertRequest(event.chatId, indicatorName, pair, type, value)
         val alert = alertRepository.addAlert(request)
 
         return "New alert id ${alert.id}"
